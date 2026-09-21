@@ -1,16 +1,21 @@
 #!/usr/bin/env bash
-# LocalAI - Deploy to Vultr Cloud Compute (CPU, $6/mo)
+# LocalAI - Deploy to Vultr Cloud Compute (CPU, $20/mo - 2 vCPU / 4 GB RAM)
 # Run on fresh Ubuntu 24.04 server as root
 
 set -euo pipefail
 
 echo "🚀 Deploying LocalAI..."
 
-# Install Docker
-apt-get update && apt-get install -y docker.io docker-compose-plugin git curl
+# Install Docker from official repo (includes docker compose)
+apt-get update && apt-get install -y ca-certificates curl gnupg git
+install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+chmod a+r /etc/apt/keyrings/docker.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+apt-get update && apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 systemctl enable --now docker
 
-# Clone repo (replace with your fork)
+# Clone repo
 REPO_URL="https://github.com/arez7036-create/LocalAI.git"
 INSTALL_DIR="/opt/LocalAI"
 
